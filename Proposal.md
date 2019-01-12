@@ -46,8 +46,3 @@ The map tab will showcase how each each variable distributed in each country. Ea
 ![Alt](img/markup_map.png)
 
 <div align="center"><sup>Figure 3</sup></div>
-
-When users select multiple columns, the app will display multiple graphs in the single tab as shown below
-![Alt](img/markup_multi.png)
-
-<div align="center"><sup>Figure 4</sup></div>
