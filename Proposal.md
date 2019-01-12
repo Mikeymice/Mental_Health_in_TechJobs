@@ -26,6 +26,10 @@ Raw data:
 
 ## Section 3: Usage and scenario tasks
 
+Jessica is an insurance policy analyst tasked with creating policies at a new insurance firm.  Her goal is to strategically implement a mental health policies, which benefit businesses in technology-related industries. Jessica can do this by analyzing various variables by selecting them from the drop-own menu, such as company size and location, which may influence employees' opinions of mental health.  She can ask potential companies to follow up with similar survey questions for their employees to help create optimal health plans, which improve overall employee mental health outcomes. Jessica could also customize policies for companies, by importing different surveys into the shiny app to observe current mental health policy functioning across different geographic locations. If Jessica decides to go above and beyond, she can also integrate this data with global patient health information to identify potential strengths and weaknesses and help further cater insurance policies for new clientele.
+
+Alternatively, as an employee with in the tech industry who is interested about global mental health opinions and benefits may find this app useful when exploring alternative and new places to work. For example, Joe is a computer programmer looking for a new job opportunity which places mental health as a high priority with a positive environment when seeking help. With the help of this shiny app, Joe can search for cities with the highest positive views on mental health as a deciding factor when searching for new work opportunities. 
+
 ## Section 4: Description of app
 
 The app has a landing page that shows various visualizations of the data according to the filters and graph type selected. The filters consist of List Box for the feature columns of the interest such as availability of mental health benefits and mental health history. There are Dropdown lists for Countries and States (US only). There will be slider for age selection, and Users can also filter the gender by selecting the Checkbox list.
