@@ -20,7 +20,6 @@ Other interesting questions that users may also be able to explore with this app
 This [Kaggle](https://www.kaggle.com/osmi/mental-health-in-tech-survey/home) dataset is from a 2014 survey that measures attitudes towards mental health and frequency of mental health disorders in the tech workplace. This survey was completed by 1259 tech employees globally, across 48 countries, and contains responses to primarily 24 categorical variables. The data will be used to visualize interactions related to our proposal.
 
 Raw data:  
-
 ![Raw Data](img/raw_data_table.png)
 
 ## Section 3: Usage and scenario tasks
