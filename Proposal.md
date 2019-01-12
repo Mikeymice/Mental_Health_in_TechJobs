@@ -1,14 +1,18 @@
 # Milestone 1: Proposal
 
 ## Team Members  
-Heather  
-Mike  
-Mani  
+| Name | Github.com Username |
+|----- | ------------------- |
+| Heather  Van Tassel | heathervant |
+| Mike Yuan | mikey |  
+| Mani Kaur |   |
+
+  
 
 ## Section 1: Overview
-This dataset asks people from all over the world working in technology about their opinions on mental health and what kind of options and benefits are available to them through their work. Since participants are from all over the world, the benefits and policies differ along with opinions. Most surve questions are either binary (yes/no) or on a likert scale ranging from often-never and very easy to ery difficult. There were __ respondents from __ countries. USA represents _% of the respondents and _ is the next largest constituent at _%. There are some very interesting questions that users will be able to explore with this shiny app. We would like to allow users to explore the question: How do mental health perceptions differ across genders and countries/states? We hope to display this data with a world map and drop-down selections for age, gender, and survey questions, which will allow people to visualize which regions and genders have similar answers to the survey questions which range from how easy it is to get mental health support and their company's mental health benefits, to how comfortable they feel seeking help from employers and talking about mental health issues with their current and potential employers.
+This dataset asks people from all over the world working in technology about their opinions on mental health and what kind of options and benefits are available to them through their work. Since participants are from all over the world, the benefits and policies differ along with opinions. Most surve questions are either binary (yes/no) or on a likert scale ranging from often-never and very easy to ery difficult. There were 1259 respondents from 48 countries. USA represents 60% of the respondents and the UK is the next largest constituent at 15%. There are some very interesting questions that users will be able to explore with this shiny app. We would like to allow users to explore the question: *How do mental health perceptions differ across genders and countries/states?* We hope to display this data with a world map and drop-down selections for age, gender, and survey questions, which will allow people to visualize which regions and genders have similar answers to the survey questions which range from how easy it is to get mental health support and their company's mental health benefits, to how comfortable they feel seeking help from employers and talking about mental health issues with their current and potential employers.
 
-Other interesting questions that users will also be able to explore with this app include:
+Other interesting questions that users may also be able to explore with this app include:
 - How does the size of the company influence whether mental health wellness benefits/programs are accessible? 
 - How does working remotely influence mental health opinions? 
 
@@ -16,6 +20,7 @@ Other interesting questions that users will also be able to explore with this ap
 This [Kaggle](https://www.kaggle.com/osmi/mental-health-in-tech-survey/home) dataset is from a 2014 survey that measures attitudes towards mental health and frequency of mental health disorders in the tech workplace. This survey was completed by 1259 tech employees globally and contains responses to primarily 24 categorical variables relevant to our proposal.
 
 ## Section 3: Usage and scenario tasks
+
 
 ## Section 4: Description of app
 
