@@ -10,12 +10,12 @@
 
 The app has a landing page that shows various visualizations of the data according to the filters and graph type selected. The filters consist of List Box for the feature cloumns of the interest such as SO and SO. There are Dropdown lists for Countries and States (US only). Users can also filter the gender by selecting the Checkbox list.
 
-The data will be displayed as either Datatable, Barchart or Map. Users can select the graph type by clicking on the corresponding tab. Hovering cursor on each bar will display more values as tooltips. Figure 1 shows that Barchart with description of the data below.
-![Alt](img/markup_bar.png)
+The data will be displayed as either Datatable, Barchart or Map. Users can select the graph type by clicking on the corresponding tab. Hovering cursor on each bar will display more values as tooltips. Figure 1 shows that Datatable with description of the data below.
+![Alt](img/markup_datatable.png)
 
 <div align="center"><sup>Figure 1</sup></div>
 
-The Datable tab (as shown in Figure 2) will allow user to examine raw data and search for certain value such as Coutry or State.
+The Barchart tab (as shown in Figure 2) will allow user to examine raw data and search for certain value such as Coutry or State.
 ![Alt](img/markup_datatable.png)
 
 <div align="center"><sup>Figure 2</sup></div>
