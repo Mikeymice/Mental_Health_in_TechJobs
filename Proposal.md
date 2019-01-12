@@ -11,7 +11,9 @@ This dataset asks people from all over the world working in technology about the
 Other interesting questions that users will also be able to explore with this app include:
 - How does the size of the company influence whether mental health wellness benefits/programs are accessible? 
 - How does working remotely influence mental health opinions? 
+
 ## Section 2: Description of the data
+This [Kaggle](https://www.kaggle.com/osmi/mental-health-in-tech-survey/home) dataset is from a 2014 survey that measures attitudes towards mental health and frequency of mental health disorders in the tech workplace. This survey was completed by 1259 tech employees globally and contains responses to primarily 24 categorical variables relevant to our proposal.
 
 ## Section 3: Usage and scenario tasks
 
