@@ -21,7 +21,7 @@ This [Kaggle](https://www.kaggle.com/osmi/mental-health-in-tech-survey/home) dat
 
 Raw data:  
 
-![Raw Data]("img/raw_data_table.png")
+![Raw Data](img/raw_data_table.png)
 
 ## Section 3: Usage and scenario tasks
 
