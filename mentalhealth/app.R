@@ -14,7 +14,8 @@ library(tidyverse)
 
 # test dataset 
 #data <- data(mtcars)
-data <- mtcars
+
+data <- read.csv("data/survey.csv")
 
 # Load dataset HERE!!
 
@@ -26,8 +27,8 @@ data <- mtcars
 
 # extract the columns name into choice list for the filter
 choices = data.frame(
-    var = names(mtcars), # need to change it to the values inside the "Question" Column
-    num = names(mtcars)
+    var = names(data), # need to change it to the values inside the "Question" Column
+    num = names(data)
 )
 # List of choices for selectInput
 mylist <- as.list(choices$num)
@@ -116,6 +117,7 @@ server <- function(input, output) {
             geom_bar()
         # add faccet here for multiipoe columns 
     })
+    
     # Map
     
     
