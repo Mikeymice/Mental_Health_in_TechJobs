@@ -37,10 +37,27 @@ names(mylist) <- choices$var
 
 
 # extract country list choices
+countries<-unique(sort(data$Country))
+country_choices = data.frame(
+    var = countries, # need to change it to the values inside the "Question" Column
+    num = countries
+)
+# List of choices for selectInput
+countryList <- as.list(country_choices$num)
+# Name it
+names(countryList) <- country_choices$var
 
 
 # extract state values for choices 
-
+states <- unique(sort(data$state))
+state_choices = data.frame(
+    var = states,
+    num = states
+)
+# List of choices for selectInput
+stateList <- as.list(state_choices$num)
+# Name it
+names(stateList) <- state_choices$var
 
 
 # Define UI for application that draws a histogram
@@ -54,17 +71,24 @@ ui <- fluidPage(
         sidebarPanel(
             
             # Columns selector 
-            selectInput("columns", "Columns", choices = mylist, multiple = TRUE,
-                        selectize = TRUE, width = NULL, size = NULL),
+            # selectInput("columns", "Columns", choices = mylist, multiple = TRUE,
+            #             selectize = TRUE, width = NULL, size = NULL),
+            
+            selectizeInput("columns", "Columns", 
+                           choices= mylist, 
+                           multiple = TRUE, 
+                           selected = c("Gender", "Country","Age"),
+                           options = list(maxItems = 6)),
             
             hr(),
             # Location selector
-            selectInput("select", "Country", 
-                        choices = list("Choice 1" = 1, "Choice 2" = 2, "Choice 3" = 3), 
-                        selected = 1),
-            selectInput("select", "State (US only)", 
-                        choices = list("Choice 1" = 1, "Choice 2" = 2, "Choice 3" = 3), 
-                        selected = 1),
+            selectInput("country", "Country", 
+                        choices = countryList, multiple = TRUE 
+                        ),
+            p("Select None will show all"),
+            br(),
+            uiOutput("state"),
+            
             
             hr(),
             
@@ -77,7 +101,11 @@ ui <- fluidPage(
             
             # Genders filters
             checkboxGroupInput("genders", "Gender", 
-                               choices = list("Male" = 1, "Trans Male" = 2, "Female" = 3, "Trans Female" = 4),
+                               choices = list("Male" = "Male", 
+                                              "Trans Male" = "Trans Female", 
+                                              "Female" = "Female", 
+                                              "Trans Female" = "Trans Female"),
+                               selected = c("Male", "Female", "Trans Male", "Trans Female")
                               )
         ),
 
@@ -97,11 +125,29 @@ ui <- fluidPage(
 server <- function(input, output) {
 
    # reactive data here
-    
+   
     data_input <- reactive(data %>%
                                # filter here 
+                               filter(Country %in% input$country | is.null(input$country )) %>% # filter country
+                               # filter state
+                               filter(Country != "United States" | (Country == "United States" & (state %in% input$state | is.null(input$state))) ) %>%
+                               # filter age
+                               filter(between(Age, input$ages[1],input$ages[2])) %>%
+                               # filter gender 
+                               filter(Gender %in% input$genders) %>%
                                select(input$columns) # need to append the filters values such as gender and age
                            )
+    
+    # state output
+    output$state <- renderUI(
+        if ("United States" %in% input$country)
+        {
+            selectInput("state", "State (US only)", 
+                        choices = stateList, multiple = TRUE
+            )
+        }
+    )
+    
     # Datatable
     
     output$table <- renderDataTable(
