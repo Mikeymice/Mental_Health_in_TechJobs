@@ -8,12 +8,15 @@
 #
 
 library(shiny)
+library(tidyverse)
 
+#library(DT)
 
 # test dataset 
+#data <- data(mtcars)
+data <- mtcars
 
-data(mtcars)
-
+# Load dataset HERE!!
 
 # read the data
 
@@ -23,8 +26,8 @@ data(mtcars)
 
 # extract the columns name into choice list for the filter
 choices = data.frame(
-    var = names(mtcars),
-    num = 1:length(names(mtcars))
+    var = names(mtcars), # need to change it to the values inside the "Question" Column
+    num = names(mtcars)
 )
 # List of choices for selectInput
 mylist <- as.list(choices$num)
@@ -34,7 +37,9 @@ names(mylist) <- choices$var
 
 # extract country list choices
 
+
 # extract state values for choices 
+
 
 
 # Define UI for application that draws a histogram
@@ -51,6 +56,7 @@ ui <- fluidPage(
             selectInput("columns", "Columns", choices = mylist, multiple = TRUE,
                         selectize = TRUE, width = NULL, size = NULL),
             
+            hr(),
             # Location selector
             selectInput("select", "Country", 
                         choices = list("Choice 1" = 1, "Choice 2" = 2, "Choice 3" = 3), 
@@ -58,6 +64,8 @@ ui <- fluidPage(
             selectInput("select", "State (US only)", 
                         choices = list("Choice 1" = 1, "Choice 2" = 2, "Choice 3" = 3), 
                         selected = 1),
+            
+            hr(),
             
             # age selector
             sliderInput("ages",
@@ -77,7 +85,7 @@ ui <- fluidPage(
           # plotOutput("distPlot")
             
             tabsetPanel(type = "tabs",
-                        tabPanel("Table", tableOutput("table")),
+                        tabPanel("Table", dataTableOutput("table")),
                         tabPanel("Plot", plotOutput("plot")),
                         tabPanel("Map"), plotOutput("map"))
         )
@@ -87,7 +95,30 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output) {
 
-   
+   # reactive data here
+    
+    data_input <- reactive(data %>%
+                               # filter here 
+                               select(input$columns) # need to append the filters values such as gender and age
+                           )
+    # Datatable
+    
+    output$table <- renderDataTable(
+       data_input()
+    )
+    
+    
+    
+    # Barchart
+    output$plot <- renderPlot({
+        data_input() %>%
+            ggplot(aes(input$columns)) + # need to change it to one single columns 
+            geom_bar()
+        # add faccet here for multiipoe columns 
+    })
+    # Map
+    
+    
 }
 
 # Run the application 
