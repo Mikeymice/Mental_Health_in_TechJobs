@@ -9,7 +9,10 @@
 
 library(shiny)
 library(tidyverse)
+library(leaflet)
 
+library(maps)
+mapStates = map("state", fill = TRUE, plot = FALSE)
 #library(DT)
 
 # test dataset 
@@ -78,7 +81,7 @@ ui <- fluidPage(
                            choices= mylist, 
                            multiple = TRUE, 
                            selected = c("Gender", "Country","Age"),
-                           options = list(maxItems = 6)),
+                           options = list(maxItems = 12)),
             
             hr(),
             # Location selector
@@ -116,7 +119,7 @@ ui <- fluidPage(
             tabsetPanel(type = "tabs",
                         tabPanel("Table", dataTableOutput("table")),
                         tabPanel("Plot", plotOutput("plot")),
-                        tabPanel("Map"), plotOutput("map"))
+                        tabPanel("Map", leafletOutput("map")))
         )
     )
 )
@@ -137,6 +140,9 @@ server <- function(input, output) {
                                filter(Gender %in% input$genders) %>%
                                select(input$columns) # need to append the filters values such as gender and age
                            )
+    
+    # Need reactive for graph data input HERE
+    # need to group/gather the columns to one column for question and one for answer 
     
     # state output
     output$state <- renderUI(
@@ -165,7 +171,12 @@ server <- function(input, output) {
     })
     
     # Map
-    
+    output$map <- renderLeaflet({
+        leaflet(mapStates) %>%
+            addTiles() %>%  # Add default OpenStreetMap map tiles
+            addMarkers(lng=174.768, lat=-36.852, popup="The birthplace of R")
+        
+    })
     
 }
 
