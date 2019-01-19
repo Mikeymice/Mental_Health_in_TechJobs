@@ -7,13 +7,16 @@ Originally we wanted these bar charts of survey responses, age, and gender to sh
 
 
 ## Tasks
-These were the tasks at hand for Milestone 2:
-build plot, bar plot and data tab 
-create plots that summarize mental health data 
-further user research (e.g., informal user interviews with classmates) will help confirm which plots are most useful and informative for the user
-build Analysis tab 
-add map of New York City with data points to represent location of noise complaints
-create sidepanel to filter data, and update plot and map accordingly
+The following are the tasks which were completed for Milestone 2:
+•	Build a standard ‘filter’ side panel used for each of the ‘Map’, ‘Plot’ and ‘Data Explorer’ tabs.
+•	Build ‘Map’ tab 
+    o	Create a map 
+    o	Create plots based on selected country marker on the map by the user.
+•	Build ‘Plot’ tab 
+    o	Create plots based on user selected filters from the ‘filter’ panel.
+•	Build ‘Data Explorer’ tab
+    o	Raw data based on selected filters from the ‘filter’ panel.
+• Further exploration of features with the team will help confirm which features are most relevant and informative towards the proposal.
 
 ## Vision & Next Steps
 My goal for the next milestone is to create a prettier bar plots, clean up the data, and add a comparison plot with grouped bar charts.
