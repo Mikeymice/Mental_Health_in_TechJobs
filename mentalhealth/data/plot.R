@@ -25,7 +25,7 @@ data %>%
 
 
 
-
+data %>%left_join(geo_location,by = c("Country"="name") )
 
 
 
