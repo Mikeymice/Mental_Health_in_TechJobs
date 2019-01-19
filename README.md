@@ -3,7 +3,7 @@ Mental Health survey responses from people working in the tech field are used to
 
 [Proposal link](https://github.com/UBC-MDS/Mental_Health_in_TechJobs/blob/master/Proposal.md)  
   
-[Milestone 2](https://github.com/UBC-MDS/Mental_Health_in_TechJobs/blob/master/Milestone_2.md)
+[Milestone 2 link](https://github.com/UBC-MDS/Mental_Health_in_TechJobs/blob/master/Milestone_2.md)
 
 Question: How do mental health perceptions differ accross genders and countries/states?
 
