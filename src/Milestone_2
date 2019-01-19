@@ -1,0 +1,24 @@
+# Milestone 2 report
+## Rationale
+Our rationale for the set-up of this app is to allow users to view the data with location and question responses being the main object of interest.
+In order to view subsets of the large amount of survey responses when you click on a country, the user is able to see plots below the map based on the country they select.
+They can also click on the dropdown list of countries to see multiple countries and view summary statistics for the selected countries in the plot tab. As seen in the screenshots above as the bar graph plots. 
+Originally we wanted these bar charts of survey responses, age, and gender to show up by hovering over the map, but this took up too much space, and covered the map, so by having it below the map, it is less overwhelming and easier to understand.
+
+
+## Tasks
+These were the tasks at hand for Milestone 2:
+build plot, bar plot and data tab 
+create plots that summarize mental health data 
+further user research (e.g., informal user interviews with classmates) will help confirm which plots are most useful and informative for the user
+build Analysis tab 
+add map of New York City with data points to represent location of noise complaints
+create sidepanel to filter data, and update plot and map accordingly
+
+## Vision & Next Steps
+My goal for the next milestone is to create a prettier bar plots, clean up the data, and add a comparison plot with grouped bar charts.
+We will also double check all of the geotags are correct.
+If time permits, I will implement this for the next milestone.
+
+Bugs
+There are several bugs in my app that will need to be fixed for the next iteration. For example, 
