@@ -10,15 +10,18 @@
 library(shiny)
 library(tidyverse)
 library(leaflet)
-
+library(leaflet.minicharts)
 library(maps)
-mapStates = map("state", fill = TRUE, plot = FALSE)
+mapStates = map("world", fill = TRUE, plot = FALSE)
 #library(DT)
 
 # test dataset 
 #data <- data(mtcars)
 
 data <- read.csv("data/survey.csv")
+geo_location <- read.csv("data/countries.csv")
+
+print(head(geo_location))
 
 # Load dataset HERE!!
 
@@ -74,9 +77,7 @@ ui <- fluidPage(
         sidebarPanel(
             
             # Columns selector 
-            # selectInput("columns", "Columns", choices = mylist, multiple = TRUE,
-            #             selectize = TRUE, width = NULL, size = NULL),
-            
+
             selectizeInput("columns", "Columns", 
                            choices= mylist, 
                            multiple = TRUE, 
@@ -117,9 +118,10 @@ ui <- fluidPage(
           # plotOutput("distPlot")
             
             tabsetPanel(type = "tabs",
-                        tabPanel("Table", dataTableOutput("table")),
-                        tabPanel("Plot", plotOutput("plot")),
-                        tabPanel("Map", leafletOutput("map")))
+                        tabPanel("Map", leafletOutput("map", height= "400px"), hr(), plotOutput("mapplot", height= "700px")),
+                        tabPanel("Plot", plotOutput("plot", height= "700px")),
+                        
+                        tabPanel("Data Explorer", br(),dataTableOutput("table")))
         )
     )
 )
@@ -133,18 +135,48 @@ server <- function(input, output) {
                                # filter here 
                                filter(Country %in% input$country | is.null(input$country )) %>% # filter country
                                # filter state
+                               # keep country that is not United States OR Country is United state then filter State, Show all States if no State selected
                                filter(Country != "United States" | (Country == "United States" & (state %in% input$state | is.null(input$state))) ) %>%
                                # filter age
                                filter(between(Age, input$ages[1],input$ages[2])) %>%
                                # filter gender 
                                filter(Gender %in% input$genders) %>%
                                select(input$columns) # need to append the filters values such as gender and age
+                          
                            )
+    data_chart_input <- reactive(
+        data_input() %>%
+            gather(key = "question", value = "answer", one_of(input$columns))
+    )
     
     # Need reactive for graph data input HERE
+    
+    chart_input <- reactive(
+        # use different color and theme 
+        data_chart_input() %>%
+            ggplot(aes(x = answer)) +
+            geom_bar() +
+            facet_wrap( ~ question, ncol=2, scales="free") +
+            theme(axis.text.x = element_text(angle = 45, hjust = 1))
+                                
+                            )
     # need to group/gather the columns to one column for question and one for answer 
     
-    # state output
+    
+    map_input <- reactive(
+        # get the country geolocation 
+        # Need to debug for loss data
+        geo_location %>%
+            semi_join(data_input(),by = c("name"="Country") ) # neeed to debug and clean up 
+        
+       
+    )
+    
+    
+
+    
+    
+    # state output Only show the state option when USA is selected
     output$state <- renderUI(
         if ("United States" %in% input$country)
         {
@@ -157,25 +189,67 @@ server <- function(input, output) {
     # Datatable
     
     output$table <- renderDataTable(
-       data_input()
+      data_input()
+       # map_input()
     )
     
     
     
     # Barchart
     output$plot <- renderPlot({
-        data_input() %>%
-            ggplot(aes(input$columns)) + # need to change it to one single columns 
-            geom_bar()
-        # add faccet here for multiipoe columns 
+        chart_input()
     })
     
     # Map
     output$map <- renderLeaflet({
-        leaflet(mapStates) %>%
+        # BEWARE, need to check if the all the countries are in the table and has proper geolocation
+        leaflet(data = map_input()) %>%
             addTiles() %>%  # Add default OpenStreetMap map tiles
-            addMarkers(lng=174.768, lat=-36.852, popup="The birthplace of R")
+            #addPolygons(fillColor = topo.colors(10, alpha = NULL), stroke = FALSE) %>%
+            addMarkers(  lat = ~latitude, lng=~longitude, label = ~name, popup = ~name)
+            
         
+        # ALSO need to make sure how to draw the state as well 
+        
+        
+    })
+    
+    
+    # Mapplot render
+    
+    output$mapplot <- renderPlot({
+        
+        p <- input$map_marker_click
+        if(is.null(p))
+        {
+            chart_input()
+        }
+        else
+        {
+            data_input() %>% 
+                left_join(geo_location, by=c("Country" = "name")) %>%
+                filter(longitude == input$map_marker_click$lng & latitude == input$map_marker_click$lat) %>%
+                gather(key = "question", value = "answer", one_of(input$columns)) %>%
+                ggplot(aes(x = answer)) +
+                geom_bar() +
+                facet_wrap( ~ question, ncol=2, scales="free") +
+                theme(axis.text.x = element_text(angle = 45, hjust = 1))   
+        }
+        
+        
+    })
+    
+    # testing marker click 
+    observeEvent(input$map_marker_click, { 
+        p <- input$map_marker_click  # typo was on this line
+        print(p)
+    })
+    
+    #testing for pop up close event. THIS IS NOT WORKING, Trying to use this event to clear the plot under the map
+    # May not be implemented yet 
+    observeEvent(input$map_popup_click, { 
+         # typo was on this line
+        print("CLICKED")
     })
     
 }
