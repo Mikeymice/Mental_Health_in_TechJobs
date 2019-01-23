@@ -1,0 +1,57 @@
+---
+title: "dataclean"
+output: html_document
+---
+
+```{r setup, include=TRUe}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{R}
+library(tidyverse)
+raw <- read_csv("survey.csv")
+raw<- raw %>% #removing unwanted columns
+  select(Age, Gender, Country, state, treatment, benefits, mental_health_consequence, phys_health_interview, mental_vs_physical, obs_consequence) %>% #remove weird ages
+  filter(Age>18 & Age<100) %>% 
+  #make countries other than US have the state=NA
+  mutate(state = ifelse(!(Country == 'United States'), '', state))
+  
+male_str <- c("male", "m", "M", "male-ish", "maile", "mal", "male", "male (cis)", "make", "male ", "man","msle", "mail", "malr","cis man", "guy (-ish) ^_^")
+trans_str <- c("trans-female", "something kinda male?", "queer/she/they", "non-binary","nah", "all", "enby", "fluid", "genderqueer", "androgyne", "agender", "male leaning androgynous", "guy (-ish) ^_^", "trans woman", "neuter", "female (trans)", "queer", "ostensibly male, unsure what that really means" )
+female_str <- c("female", "cis female", "f", "F", "female", "woman",  "femake", "female ","cis-female/femme", "female (cis)", "femail")
+
+#remove answers that dont make sense
+raw <- raw %>%
+  filter(Gender != "a little about you",
+         Gender != "p")
+
+
+raw$Gender <- sapply(as.vector(raw$Gender), function(x) if(x %in% male_str) "Male" else x )
+raw$Gender <- sapply(as.vector(raw$Gender), function(x) if(x %in% female_str) "Female" else x )
+raw$Gender <- sapply(as.vector(raw$Gender), function(x) if(x %in% trans_str) "Trans" else x )
+   
+clean_data <- raw 
+ 
+countries_keep <- clean_data %>%
+  group_by(Country) %>%
+  summarize(n=n()) %>%
+  filter(n>9) %>%
+  select(Country)
+
+#remove countries with less than 10 data points
+clean_data <-
+  clean_data %>%
+  filter(Country %in% countries_keep$Country)
+clean_data
+
+```
+```{R}
+#ggplot(clean_data, aes(x= treatment)) +geom_bar()
+cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+
+ggplot(clean_data, aes(x= benefits), stat="blue") +geom_bar() + coord_flip() 
+
+ggplot(raw, aes(x=benefits, fill=treatment)) +geom_bar() + coord_flip()
+
+
+```

@@ -1,5 +1,10 @@
 # Milestone 2 report
 
+## Screenshots on Shiny App
+![image1](img/screenshot1.png)
+![image2](img/screenshot2.png)
+![image3](img/screenshot3.png)
+
 ## Rationale
 
 Our rationale for the set-up of this app is to allow users to view the data with location and question responses being the main object of interest.
