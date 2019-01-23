@@ -67,16 +67,10 @@ ui <- dashboardPage(
   dashboardSidebar(
                 # Columns selector
 
-                selectizeInput("columns", "Columns",
-                               choices= mylist,
-                               multiple = TRUE, # was True 
-                               #selected = c("Gender", "Country","Age"), # can remove later
-                               #options = list(maxItems = 12)
-                               ),
-                selectizeInput("singleColumn", "single Column",
-                               choices= mylist,
-                               multiple = FALSE, # was True 
-                ),
+                
+                
+                uiOutput("columns"),
+                uiOutput("singleColumn"),
 
                 # Location selector
                 selectInput("country", "Country",
@@ -104,7 +98,7 @@ ui <- dashboardPage(
                                   ),
                    width=300),
   dashboardBody(
-    tabsetPanel(type = "tabs",
+    tabsetPanel(id="tabs", type = "tabs",
                 tabPanel("Country Map", 
                          leafletOutput("map", height= "800px"), 
                          hr()),
@@ -240,6 +234,35 @@ server <- function(input, output) {
         
     })
     
+    observe({
+      print(input$tabs)
+    })
+    
+    # only show column question with multiple select if we are NOT on the map tab
+    output$columns <- renderUI(
+      if(input$tabs != "Country Map" )
+      {
+        selectizeInput("columns", "Survey Questions",
+                       choices= mylist,
+                       multiple = TRUE, # was True 
+                       #selected = c("Gender", "Country","Age"), # can remove later
+                       options = list(maxItems = 4)
+        )
+      }
+
+    )
+    
+    # only show single column if on country map
+    output$singleColumn <- renderUI(
+      
+      if(input$tabs == "Country Map")
+      {
+        selectizeInput("singleColumn", "Survey Question",
+                       choices= mylist,
+                       multiple = FALSE, # was True 
+        )
+      }
+    )
     
     
 }
