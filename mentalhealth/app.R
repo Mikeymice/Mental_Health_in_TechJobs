@@ -19,33 +19,23 @@ library(mapview)
 mapStates = map("world", fill = TRUE, plot = FALSE)
 #library(DT)
 
-# test dataset 
-#data <- data(mtcars)
 
-data <- read.csv("data/survey.csv")
+
+data <- read.csv("data/clean_data.csv")
 geo_location <- read.csv("data/countries.csv")
 
 print(head(geo_location))
 
-# Load dataset HERE!!
 
-# read the data
-
-# data clean up 
-
-# define the columns of interests
-
-# extract the columns name into choice list for the filter
-choices = data.frame(
-    var = names(data), # need to change it to the values inside the "Question" Column
-    num = names(data)
+mylist <- c(
+  "Have sought treamtent for mental condition?" = "treatment",
+  "Do your employer provide mental health benefits?" = "benefits",
+  "Possible consequence if discuss a mental health issue with employer?" = "mental_health_consequence",
+  "Would you bring up a physical health issue with a potential employer in an interview?" = "phys_health_interview",
+  "Do you feel that your employer takes mental health as seriously as physical health?" = "mental_vs_physical",
+  "Have you heard of or observed negative consequence for coworkers with metnal health condition at workplace?" = "obs_consequence"
 )
-# List of choices for selectInput
-mylist <- as.list(choices$num)
-# Name it
-names(mylist) <- choices$var
 
-############## Extract Columns Names as options in the drop down list ############
 
 # extract country list choices
 countries<-unique(sort(data$Country))
@@ -71,69 +61,6 @@ stateList <- as.list(state_choices$num)
 names(stateList) <- state_choices$var
 
 
-############################  END  ###########################
-
-
-# Define UI for application that draws a histogram
-# ui <- fluidPage(
-# 
-#     # Application title
-#     titlePanel("Mental Health Preception"),
-# 
-#     # Sidebar with a slider input for number of bins
-#     sidebarLayout(
-#         sidebarPanel(
-# 
-#             # Columns selector
-# 
-#             selectizeInput("columns", "Columns",
-#                            choices= mylist,
-#                            multiple = TRUE,
-#                            selected = c("Gender", "Country","Age"), # can remove later
-#                            options = list(maxItems = 12)),
-# 
-#             hr(),
-#             # Location selector
-#             selectInput("country", "Country",
-#                         choices = countryList, multiple = TRUE
-#                         ),
-#             p("Select None will show all"),
-#             br(),
-#             uiOutput("state"),
-# 
-# 
-#             hr(),
-# 
-#             # age selector
-#             sliderInput("ages",
-#                         "Age Range:",
-#                         min = 1,
-#                         max = 99,
-#                         value = c(20,60)),
-# 
-#             # Genders filters
-#             # will need to modify based on the cleaned data
-#             checkboxGroupInput("genders", "Gender",
-#                                choices = list("Male" = "Male",
-#                                               "Trans Male" = "Trans Female",
-#                                               "Female" = "Female",
-#                                               "Trans Female" = "Trans Female"),
-#                                selected = c("Male", "Female", "Trans Male", "Trans Female")
-#                               )
-#         ),
-# 
-#         # Show a plot of the generated distribution
-#         mainPanel(
-#           # plotOutput("distPlot")
-# 
-#             # may need to add stringoutput for description
-#             tabsetPanel(type = "tabs",
-#                         tabPanel("Map", leafletOutput("map", height= "400px"), hr(), plotOutput("mapplot", height= "700px")),
-#                         tabPanel("Plot", plotOutput("plot", height= "700px")),
-#                         tabPanel("Data Explorer", br(),dataTableOutput("table")))
-#         )
-#     )
-# )
 
 ui <- dashboardPage(
   dashboardHeader(title="Mental Health Perception", titleWidth= 300 ),
@@ -151,7 +78,6 @@ ui <- dashboardPage(
                                multiple = FALSE, # was True 
                 ),
 
-               # hr(),
                 # Location selector
                 selectInput("country", "Country",
                             choices = countryList, multiple = TRUE
@@ -180,7 +106,7 @@ ui <- dashboardPage(
   dashboardBody(
     tabsetPanel(type = "tabs",
                 tabPanel("Country Map", 
-                         leafletOutput("map", height= "700px"), 
+                         leafletOutput("map", height= "800px"), 
                          hr()),
                 tabPanel("Plot", 
                          plotOutput("plot", 
@@ -208,8 +134,13 @@ server <- function(input, output) {
                                # filter gender 
                                filter(Gender %in% input$genders)
                            )
+  # get the data from the filtered and only select the columns that user select
+  data_selected <- reactive(
+    data_filtered() %>%
+      select(input$columns) # need to append the filters values such as gender and age
+  )
   
-  
+  # map use different filter because we are not filtering countries
   map_data_filtered <- reactive(
     data %>%
       filter(between(Age, input$ages[1],input$ages[2])) %>%
@@ -217,34 +148,7 @@ server <- function(input, output) {
       filter(Gender %in% input$genders) %>%
       select(Country, input$singleColumn)
   )
-    # get the data from the filtered and only select the columns that user select
-    data_selected <- reactive(
-      data_filtered() %>%
-      select(input$columns) # need to append the filters values such as gender and age
-    )
-    
-    # return country plot object for show individual country 
-    # get_country_plot <- function(long, lat ){
-    #   p <-data_filtered() %>%
-    #     left_join(geo_location, by=c("Country" = "name")) %>%
-    #     filter(longitude == long & latitude == lat) %>%
-    #     gather(key = "question", value = "answer", one_of(input$columns)) %>%
-    #     ggplot(aes(x = answer)) +
-    #     geom_bar(colour= answer) +
-    #     facet_wrap( ~ question, ncol=2, scales="free") +
-    #     theme(axis.text.x = element_text(angle = 45, hjust = 1))
-    #   
-    #   if (is.na(p))
-    #   {
-    #     return(NA) # dont return anything if there is no data from filtered 
-    #   }else
-    #     return(p)
-    #   
-    #   
-    #   
-    # }
-    
-    
+
     
     
     # group the data for chart later 
@@ -264,16 +168,6 @@ server <- function(input, output) {
             theme(axis.text.x = element_text(angle = 45, hjust = 1))
                                 
                             )
-    # need to group/gather the columns to one column for question and one for answer 
-    
-    # mainly for drawing markers on the map. 
-    # filter the only countries that appears in the filtered data 
-    map_input <- reactive(
-
-        geo_location %>%
-            inner_join(data_filtered(),by = c("name"="Country") )
-       
-    )
     
   
     # state output Only show the state option when USA is selected
@@ -293,15 +187,11 @@ server <- function(input, output) {
       #data_chart_input()
     )
     
-    
-    
     # Barchart
     output$plot <- renderPlot({
      
       if(length(input$columns) !=  0)
         chart_input()
-        
-      
     })
     
     # Map
@@ -326,16 +216,13 @@ server <- function(input, output) {
         cols <- cols[!( cols%in% c("Country", "latitude", "longitude"))]
         print(cols)
         
-        
-       # print(values)
         spread_data[is.na(spread_data)] <- 0
-        
         
         spread_data$total <- rowSums(spread_data[,cols], na.rm=TRUE)
         
         print(head(spread_data))
         
-        leaflet(data = spread_data, options = leafletOptions(minZoom = 3, maxZoom = 5)) %>%
+        leaflet(data = spread_data, options = leafletOptions(minZoom = 2, maxZoom = 5)) %>%
           addTiles() %>%
           addMinicharts(
             spread_data$longitude, spread_data$latitude,
@@ -349,61 +236,11 @@ server <- function(input, output) {
             opacity = 0.7
           ) %>%
           setView(-71.0382679, 42.3489054, zoom = 3)
-      
-        
-        # 
-        # if(nrow(map_input())!= 0)
-        #   baseMap <- leaflet(data = map_input()) %>%
-        #     addTiles() %>%
-        #     addMarkers(lat = ~latitude, 
-        #                lng=~longitude, 
-        #                label = ~name, 
-        #                popup = ~name,
-        #                popupOptions = popupOptions(closeButton = FALSE)) 
-        # 
-        # 
-        # else
-        #   baseMap <- leaflet() %>%
-        #     addTiles()
-        #     
-        # baseMap
-        
-    })
-    
-    
-    # Mapplot render
 
-    
-    output$mapplot <- renderPlot({
-        
-        p <- input$map_marker_click
-        if(is.null(p) || length(input$columns) ==0) # need to check if the current click is in the list
-        {
-            return() # dont show anything if no mark is clicked
-        }
-        else
-        {
-          
-          get_country_plot(input$map_marker_click$lng, input$map_marker_click$lat)
-          
-        }
         
     })
     
-    # testing marker click 
-    observeEvent(input$map_marker_click, { 
-        p <- input$map_marker_click  # typo was on this line
-        print(p)
-    })
     
-    #testing for pop up close event. THIS IS NOT WORKING, Trying to use this event to clear the plot under the map
-    # May not be implemented yet 
-    observeEvent(input$map_popup_click, { 
-         # typo was on this line
-        print("CLICKED")
-    })
-    
-
     
 }
 

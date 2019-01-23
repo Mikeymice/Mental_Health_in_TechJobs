@@ -44,6 +44,8 @@ clean_data <-
   filter(Country %in% countries_keep$Country)
 clean_data
 
+write.csv(clean_data, file = "clean_data.csv")
+
 ```
 ```{R}
 #ggplot(clean_data, aes(x= treatment)) +geom_bar()
