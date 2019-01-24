@@ -8,6 +8,7 @@
 #
 
 library(shiny)
+library(plotly)
 
 
 library(shinydashboard)
@@ -16,6 +17,7 @@ library(leaflet)
 library(leaflet.minicharts)
 library(maps)
 library(mapview)
+library(htmltools)
 mapStates = map("world", fill = TRUE, plot = FALSE)
 #library(DT)
 
@@ -73,12 +75,11 @@ ui <- dashboardPage(
                 uiOutput("singleColumn"),
 
                 # Location selector
-                selectInput("country", "Country",
-                            choices = countryList, multiple = TRUE
-                            ),
-                p(" Select None will show all"),
-                br(),
-                uiOutput("state"),
+                uiOutput("country"),
+               
+               
+               
+               # uiOutput("state"),
 
                 # age selector
                 sliderInput("ages",
@@ -91,19 +92,19 @@ ui <- dashboardPage(
                 # will need to modify based on the cleaned data
                 checkboxGroupInput("genders", "Gender",
                                    choices = list("Male" = "Male",
-                                                  "Trans Male" = "Trans Female",
+                                                  
                                                   "Female" = "Female",
-                                                  "Trans Female" = "Trans Female"),
-                                   selected = c("Male", "Female", "Trans Male", "Trans Female")
+                                                  "Trans" = "Trans"),
+                                   selected = c("Male", "Female", "Trans")
                                   ),
                    width=300),
   dashboardBody(
-    tabsetPanel(id="tabs", type = "tabs",
+    tabBox(id="tabs", type = "tabs", width = 12,
                 tabPanel("Country Map", 
-                         leafletOutput("map", height= "800px"), 
+                         leafletOutput("map", height= "700px"), 
                          hr()),
                 tabPanel("Plot", 
-                         plotOutput("plot", 
+                         plotlyOutput("plot", 
                                     height= "700px")),
                 tabPanel("Data Explorer", 
                          br(),
@@ -184,7 +185,7 @@ server <- function(input, output) {
     )
     
     # Barchart
-    output$plot <- renderPlot({
+    output$plot <- renderPlotly({
      
       if(length(input$columns) !=  0)
         chart_input()
@@ -195,7 +196,14 @@ server <- function(input, output) {
         # BEWARE, need to check if the all the countries are in the table and has proper geolocation
         data <- map_data_filtered()
         
+       
+        if(nrow(data) == 0)
+          return(  leaflet( options = leafletOptions(minZoom = 2, maxZoom = 5)) %>%
+                     addProviderTiles("OpenStreetMap.Mapnik"))
+        
         values <- unique(data[, input$singleColumn])
+        
+        
         
         spread_data <-data %>%
           group_by(Country, value = data[1:nrow(data), input$singleColumn]) %>%
@@ -219,17 +227,27 @@ server <- function(input, output) {
         print(head(spread_data))
         
         leaflet(data = spread_data, options = leafletOptions(minZoom = 2, maxZoom = 5)) %>%
-          addTiles() %>%
+          addProviderTiles("OpenStreetMap.Mapnik") %>% 
+          addLabelOnlyMarkers(lng = ~longitude, 
+                              lat = ~latitude, 
+                              label = ~Country,
+                              labelOptions = labelOptions(noHide = TRUE, 
+                                                          textOnly = FALSE, 
+                                                          direction = "top", 
+                                                          textsize = "12px",
+                                                          
+                                                          offset = c(0,-30))) %>%
           addMinicharts(
             spread_data$longitude, spread_data$latitude,
             type = "pie",
             chartdata = spread_data[, cols], 
             transitionTime = 0, 
-            width = 90* sqrt(spread_data$total) / sqrt(max(spread_data$total)), 
+            width = 100* sqrt(spread_data$total) / sqrt(max(spread_data$total)), 
+            #width = 50, height = 60,
             labelText = spread_data$Country, 
             #showLabels = TRUE,
             popup = popupArgs(showTitle = TRUE, showValues = TRUE),
-            opacity = 0.7
+            opacity = 0.6
           ) %>%
           #addCircleMarkers(label=~Country, opacity = 0.0, radius= 10.0001)%>%
           setView(-71.0382679, 42.3489054, zoom = 3)
@@ -263,6 +281,20 @@ server <- function(input, output) {
         selectizeInput("singleColumn", "Survey Question",
                        choices= mylist,
                        multiple = FALSE, # was True 
+        )
+      }
+    )
+    
+    output$country <- renderUI(
+      if(input$tabs == "Country Map")
+      {
+        return()
+      }
+      else
+      {
+        selectizeInput("country", "Country",
+                    choices = countryList, multiple = TRUE,
+                    options = list(maxItems = 2)
         )
       }
     )
