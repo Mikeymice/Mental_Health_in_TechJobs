@@ -147,7 +147,8 @@ server <- function(input, output) {
     
     # group the data for chart later 
     data_chart_input <- reactive(
-        data_selected() %>%
+       # data_selected() %>%
+      data_filtered() %>%
             gather(key = "question", value = "answer", one_of(input$columns))
     )
     
@@ -156,10 +157,11 @@ server <- function(input, output) {
     chart_input <- reactive(
         # use different color and theme 
         data_chart_input() %>%
-            ggplot(aes(x = answer, fill = answer)) +
+            ggplot(aes(x = answer, fill = Country)) +
             geom_bar() +
-            facet_wrap( ~ question, ncol=2, scales="free") +
-            theme(axis.text.x = element_text(angle = 45, hjust = 1))
+            facet_wrap( question ~ Country,ncol =2,  scales="free") +
+            theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+                  panel.spacing.x=unit(4.0, "lines"))
                                 
                             )
     
@@ -229,6 +231,7 @@ server <- function(input, output) {
             popup = popupArgs(showTitle = TRUE, showValues = TRUE),
             opacity = 0.7
           ) %>%
+          #addCircleMarkers(label=~Country, opacity = 0.0, radius= 10.0001)%>%
           setView(-71.0382679, 42.3489054, zoom = 3)
 
         
