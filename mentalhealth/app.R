@@ -64,8 +64,13 @@ names(stateList) <- state_choices$var
 
 
 
-ui <- dashboardPage(
-  dashboardHeader(title="Mental Health Perception", titleWidth= 300 ),
+ui <- dashboardPage(skin = "green",
+  #dashboardHeader(title="Mental Health Perception", titleWidth= 300 ),
+  dashboardHeader(title = "Mental Health Perception", titleWidth = 300,
+                  tags$li(a(href = 'https://github.com/UBC-MDS/Mental_Health_in_TechJobs', 
+                            icon("github"),"GitHub",
+                            title = "GitHub"),
+                          class = "dropdown")),
   dashboardSidebar(
                 # Columns selector
 
@@ -99,11 +104,11 @@ ui <- dashboardPage(
                                   ),
                    width=300),
   dashboardBody(
-    tabBox(id="tabs", type = "tabs", width = 12,
+    tabBox(id="tabs", type = "tabs", width = 12, height=1000,
                 tabPanel("Country Map", 
                          leafletOutput("map", height= "700px"), 
                          hr()),
-                tabPanel("Plot", 
+                tabPanel("Compare Countries", 
                          plotlyOutput("plot", 
                                     height= "700px")),
                 tabPanel("Data Explorer", 
@@ -157,12 +162,26 @@ server <- function(input, output) {
     
     chart_input <- reactive(
         # use different color and theme 
+      if(length(input$country) == 0)
+      {
         data_chart_input() %>%
+          ggplot(aes(x = answer, fill = Country)) +
+          geom_bar() +
+        facet_wrap( ~ question,ncol = 3,  scales="free") +
+          theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+                panel.spacing.x=unit(2.0, "lines")) 
+        
+      }
+      else
+        {
+          data_chart_input() %>%
             ggplot(aes(x = answer, fill = Country)) +
             geom_bar() +
-            facet_wrap( question ~ Country,ncol =2,  scales="free") +
+            facet_wrap( question ~ Country,ncol = length(input$country),  scales="free") +
             theme(axis.text.x = element_text(angle = 45, hjust = 1), 
-                  panel.spacing.x=unit(4.0, "lines"))
+                  panel.spacing.x=unit(2.0, "lines")) 
+        }
+        
                                 
                             )
     
@@ -247,7 +266,7 @@ server <- function(input, output) {
             labelText = spread_data$Country, 
             #showLabels = TRUE,
             popup = popupArgs(showTitle = TRUE, showValues = TRUE),
-            opacity = 0.6
+            opacity = 0.8
           ) %>%
           #addCircleMarkers(label=~Country, opacity = 0.0, radius= 10.0001)%>%
           setView(-71.0382679, 42.3489054, zoom = 3)
@@ -267,7 +286,7 @@ server <- function(input, output) {
                        choices= mylist,
                        multiple = TRUE, # was True 
                        #selected = c("Gender", "Country","Age"), # can remove later
-                       options = list(maxItems = 4)
+                       options = list(maxItems = 3)
         )
       }
 
@@ -281,6 +300,7 @@ server <- function(input, output) {
         selectizeInput("singleColumn", "Survey Question",
                        choices= mylist,
                        multiple = FALSE, # was True 
+                       
         )
       }
     )
