@@ -127,8 +127,6 @@ ui <- dashboardPage(skin = "green",
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   
-
-  
   # Get the reactive for the data after filter   
   data_filtered <- reactive(data %>%
                                # filter here 
@@ -156,8 +154,6 @@ server <- function(input, output) {
       select(Country, input$singleColumn)
   )
 
-    
-    
     # group the data for chart later 
     data_chart_input <- reactive(
        # data_selected() %>%
@@ -210,7 +206,6 @@ server <- function(input, output) {
                   
                   ) 
         }
-        
                                 
     )
     
@@ -249,8 +244,6 @@ server <- function(input, output) {
                      addProviderTiles("OpenStreetMap.Mapnik"))
         
         values <- unique(data[, input$singleColumn])
-        
-        
         
         spread_data <-data %>%
           group_by(Country, value = data[1:nrow(data), input$singleColumn]) %>%
@@ -297,7 +290,6 @@ server <- function(input, output) {
           ) %>%
           #addCircleMarkers(label=~Country, opacity = 0.0, radius= 10.0001)%>%
           setView(-71.0382679, 42.3489054, zoom = 3)
-
         
     })
     
@@ -326,8 +318,7 @@ server <- function(input, output) {
       {
         selectizeInput("singleColumn", "Survey Question",
                        choices= mylist,
-                       multiple = FALSE, # was True 
-                       
+                       multiple = FALSE, 
         )
       }
     )
