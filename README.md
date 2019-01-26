@@ -1,5 +1,6 @@
 # Mental_Health_in_TechJobs
 Mental Health survey responses from people working in the tech field are used to create visualizations using an R shiny app to explore the data.
+Group members: Mike Yuan, Mani Kohli, Heather Van Tassel
 
 1) [peer feedback for milestone 2](https://github.com/UBC-MDS/us-police-shootings-analysis/issues/10)
 2) [second peer feedback for milestone 2](https://github.com/UBC-MDS/americas-safest-cities/issues/9)
