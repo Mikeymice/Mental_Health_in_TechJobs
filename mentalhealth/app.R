@@ -9,8 +9,6 @@
 
 library(shiny)
 library(plotly)
-
-
 library(shinydashboard)
 library(tidyverse)
 library(leaflet)
@@ -26,9 +24,6 @@ mapStates = map("world", fill = TRUE, plot = FALSE)
 data <- read.csv("data/clean_data.csv")
 geo_location <- read.csv("data/countries.csv")
 
-print(head(geo_location))
-
-
 mylist <- c(
   "Have sought treamtent for mental condition?" = "treatment",
   "Do your employer provide mental health benefits?" = "benefits",
@@ -38,6 +33,22 @@ mylist <- c(
   "Have you heard of or observed negative consequence for coworkers with metnal health condition at workplace?" = "obs_consequence"
 )
 
+status <- list(
+ "treatment" = "Have sought treamtent for mental condition?" ,
+ "benefits" ="Do employers provide mental health benefits?",
+ "mental_health_consequence" ="Possible consequence from disucssing with employers?" ,
+ "phys_health_interview" = "Bring up a physical health issue in an interview?" ,
+ "mental_vs_physical" ="Do Employer takes mental health as seriously as physical health?" ,
+ "obs_consequence" = "Any negative consequence with metnal health condition at workplace?"
+)
+lot_labeller <- function(variable,value){
+  if (variable=='question') {
+    return(str_wrap(status[[value]],width = 35))
+  } 
+  else
+    #return(str_wrap(names(countryList)[value],width = 40))
+    return("")
+}
 
 # extract country list choices
 countries<-unique(sort(data$Country))
@@ -49,6 +60,7 @@ country_choices = data.frame(
 countryList <- as.list(country_choices$num)
 # Name it
 names(countryList) <- country_choices$var
+print(countryList)
 
 
 # extract state values for choices 
@@ -91,7 +103,6 @@ ui <- dashboardPage(skin = "green",
                 # Genders filters
                 checkboxGroupInput("genders", "Gender",
                                    choices = list("Male" = "Male",
-                                                  
                                                   "Female" = "Female",
                                                   "Trans" = "Trans"),
                                    selected = c("Male", "Female", "Trans")
@@ -104,7 +115,7 @@ ui <- dashboardPage(skin = "green",
                          hr()),
                 tabPanel("Compare Countries", 
                          plotlyOutput("plot", 
-                                    height= "700px")),
+                                    height= "800px"), height=900),
                 tabPanel("Data Explorer", 
                          br(),
                          dataTableOutput("table"))
@@ -157,32 +168,48 @@ server <- function(input, output) {
     
     chart_input <- reactive(
         # use different color and theme 
+
+      
       if(length(input$country) == 0)
       {
         data_chart_input() %>%
           ggplot(aes(x = answer, fill = Country)) +
           geom_bar() +
-        facet_wrap( ~ question,ncol = 3,  scales="free") +
+        facet_wrap( ~ question,ncol = 3,  scales="free", labeller = lot_labeller) +
           theme(axis.text.x = element_text(angle = 45, hjust = 1), 
-                panel.spacing.x=unit(2.0, "lines")) 
-        
+                panel.spacing.x=unit(3.0, "lines"),
+                panel.spacing.y=unit(1.0, "lines"),
+                text = element_text(size=15) , 
+                axis.title.x=element_blank(),
+                axis.title.y = element_blank(),
+                strip.background = element_blank(),
+                
+          ) 
       }
       else
         {
           data_chart_input() %>%
             ggplot(aes(x = answer, fill = Country)) +
             geom_bar() +
-            facet_wrap( question ~ Country,ncol = length(input$country),  scales="free",  strip.position = "bottom") +
+            facet_wrap( question ~ Country,
+                        ncol = length(input$country),  
+                        scales="free",  
+                       strip.position = "bottom",
+                        labeller = lot_labeller) +
             #facet_grid( question ~ Country,  scales="free",   space="free") +
             theme(axis.text.x = element_text(angle = 45, hjust = 1), 
-                  panel.spacing.x=unit(2.0, "lines"),
-                  
+                  panel.spacing.x=unit(3.0, "lines"),
+                  panel.spacing.y=unit(1.0, "lines"),
+                  text = element_text(size=15) , 
+                  axis.title.x=element_blank(),
+                  axis.title.y = element_blank(),
+                  strip.background = element_blank(),
                   
                   ) 
         }
         
                                 
-                            )
+    )
     
   
     # state output Only show the state option when USA is selected
