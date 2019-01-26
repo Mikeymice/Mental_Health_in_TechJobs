@@ -73,17 +73,12 @@ ui <- dashboardPage(skin = "green",
                           class = "dropdown")),
   dashboardSidebar(
                 # Columns selector
-
-                
-                
                 uiOutput("columns"),
                 uiOutput("singleColumn"),
 
                 # Location selector
                 uiOutput("country"),
-               
-               
-               
+
                # uiOutput("state"),
 
                 # age selector
@@ -94,7 +89,6 @@ ui <- dashboardPage(skin = "green",
                             value = c(20,60)),
 
                 # Genders filters
-                # will need to modify based on the cleaned data
                 checkboxGroupInput("genders", "Gender",
                                    choices = list("Male" = "Male",
                                                   
@@ -113,7 +107,8 @@ ui <- dashboardPage(skin = "green",
                                     height= "700px")),
                 tabPanel("Data Explorer", 
                          br(),
-                         dataTableOutput("table")))
+                         dataTableOutput("table"))
+                )
   )
 )
 
@@ -177,9 +172,13 @@ server <- function(input, output) {
           data_chart_input() %>%
             ggplot(aes(x = answer, fill = Country)) +
             geom_bar() +
-            facet_wrap( question ~ Country,ncol = length(input$country),  scales="free") +
+            facet_wrap( question ~ Country,ncol = length(input$country),  scales="free",  strip.position = "bottom") +
+            #facet_grid( question ~ Country,  scales="free",   space="free") +
             theme(axis.text.x = element_text(angle = 45, hjust = 1), 
-                  panel.spacing.x=unit(2.0, "lines")) 
+                  panel.spacing.x=unit(2.0, "lines"),
+                  
+                  
+                  ) 
         }
         
                                 
@@ -214,7 +213,6 @@ server <- function(input, output) {
     output$map <- renderLeaflet({
         # BEWARE, need to check if the all the countries are in the table and has proper geolocation
         data <- map_data_filtered()
-        
        
         if(nrow(data) == 0)
           return(  leaflet( options = leafletOptions(minZoom = 2, maxZoom = 5)) %>%
