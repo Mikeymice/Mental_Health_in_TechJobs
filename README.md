@@ -8,7 +8,11 @@ Mental Health survey responses from people working in the tech field are used to
   
 [Milestone 2 link](https://github.com/UBC-MDS/Mental_Health_in_TechJobs/blob/master/Milestone_2.md)
 
+[Milestone_3_writeup](https://github.com/UBC-MDS/Mental_Health_in_TechJobs/blob/master/Milestone_3)
+
 Question: How do mental health perceptions differ accross genders and countries/states?
 
 Data is taken from [Kaggle](https://www.kaggle.com/osmi/mental-health-in-tech-survey)
+
+[link to shiny app](https://mikeymice.shinyapps.io/mentalhealth/)
 
