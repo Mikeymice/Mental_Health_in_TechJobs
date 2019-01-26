@@ -43,7 +43,7 @@ status <- list(
 )
 lot_labeller <- function(variable,value){
   if (variable=='question') {
-    return(str_wrap(status[[value]],width = 35))
+    return(str_wrap(status[[value]],width = 40))
   } 
   else
     #return(str_wrap(names(countryList)[value],width = 40))
@@ -108,15 +108,16 @@ ui <- dashboardPage(skin = "green",
                                    selected = c("Male", "Female", "Trans")
                                   ),
                    width=300),
-  dashboardBody(
+  dashboardBody( min_height=1000, min_width=950,
     tabBox(id="tabs", type = "tabs", width = 12, height=1000,
                 tabPanel("Country Map", 
                          leafletOutput("map", height= "700px"), 
                          hr()),
-                tabPanel("Compare Countries", 
+                tabPanel("Compare Countries", tags$p("Select Survey Questions and Country for comparison"),
                          plotlyOutput("plot", 
-                                    height= "800px"), height=900),
+                                    height= "950px", inline=FALSE )),
                 tabPanel("Data Explorer", 
+                         tags$p("Select Survey Questions and Country for data exploring"),
                          br(),
                          dataTableOutput("table"))
                 )
@@ -175,11 +176,11 @@ server <- function(input, output) {
         data_chart_input() %>%
           ggplot(aes(x = answer, fill = Country)) +
           geom_bar() +
-        facet_wrap( ~ question,ncol = 3,  scales="free", labeller = lot_labeller) +
+        facet_wrap( ~ question,ncol = 3,  scales="free", labeller = lot_labeller ) +
           theme(axis.text.x = element_text(angle = 45, hjust = 1), 
                 panel.spacing.x=unit(3.0, "lines"),
                 panel.spacing.y=unit(1.0, "lines"),
-                text = element_text(size=15) , 
+                text = element_text(size=14) , 
                 axis.title.x=element_blank(),
                 axis.title.y = element_blank(),
                 strip.background = element_blank(),
@@ -191,16 +192,18 @@ server <- function(input, output) {
           data_chart_input() %>%
             ggplot(aes(x = answer, fill = Country)) +
             geom_bar() +
+            coord_cartesian(clip = "off")+
             facet_wrap( question ~ Country,
                         ncol = length(input$country),  
                         scales="free",  
-                       strip.position = "bottom",
+                       strip.position = "top",
                         labeller = lot_labeller) +
             #facet_grid( question ~ Country,  scales="free",   space="free") +
+            
             theme(axis.text.x = element_text(angle = 45, hjust = 1), 
                   panel.spacing.x=unit(3.0, "lines"),
                   panel.spacing.y=unit(1.0, "lines"),
-                  text = element_text(size=15) , 
+                  text = element_text(size=14) , 
                   axis.title.x=element_blank(),
                   axis.title.y = element_blank(),
                   strip.background = element_blank(),
@@ -279,7 +282,6 @@ server <- function(input, output) {
                                                           textOnly = FALSE, 
                                                           direction = "top", 
                                                           textsize = "12px",
-                                                          
                                                           offset = c(0,-30))) %>%
           addMinicharts(
             spread_data$longitude, spread_data$latitude,
