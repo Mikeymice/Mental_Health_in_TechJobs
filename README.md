@@ -9,7 +9,7 @@ Group members: Mike Yuan, Mani Kohli, Heather Van Tassel
   
 [Milestone 2 link](https://github.com/UBC-MDS/Mental_Health_in_TechJobs/blob/master/Milestone_2.md)
 
-[Milestone_3_writeup](https://github.com/UBC-MDS/Mental_Health_in_TechJobs/blob/master/Milestone_3)
+[Milestone_3_writeup](https://github.com/UBC-MDS/Mental_Health_in_TechJobs/blob/master/Milestone_3.md)
 
 Question: How do mental health incidence rates and perceptions differ accross genders and countries/states?
 
