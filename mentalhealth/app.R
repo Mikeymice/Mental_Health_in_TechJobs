@@ -16,6 +16,10 @@ library(leaflet.minicharts)
 library(maps)
 library(mapview)
 library(htmltools)
+# testing different map 
+library(scatterpie)
+
+
 mapStates = map("world", fill = TRUE, plot = FALSE)
 #library(DT)
 
@@ -108,14 +112,17 @@ ui <- dashboardPage(skin = "green",
                                    selected = c("Male", "Female", "Trans")
                                   ),
                    width=300),
-  dashboardBody( min_height=1000, min_width=950,
-    tabBox(id="tabs", type = "tabs", width = 12, height=1000,
+  dashboardBody( min_width=950,
+    tabBox(id="tabs", type = "tabs", width = 12,
                 tabPanel("Country Map", 
-                         leafletOutput("map", height= "700px"), 
+                         leafletOutput("map", height= "800px"), 
                          hr()),
+                # tabPanel("Country Map2", 
+                #     plotlyOutput("map2", height= "700px"), 
+                #     hr()),
                 tabPanel("Compare Countries", tags$p("Select Survey Questions and Country for comparison"),
                          plotlyOutput("plot", 
-                                    height= "950px", inline=FALSE )),
+                                    height= "800px", inline=FALSE )),
                 tabPanel("Data Explorer", 
                          tags$p("Select Survey Questions and Country for data exploring"),
                          br(),
@@ -127,8 +134,6 @@ ui <- dashboardPage(skin = "green",
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
-  
-
   
   # Get the reactive for the data after filter   
   data_filtered <- reactive(data %>%
@@ -157,8 +162,6 @@ server <- function(input, output) {
       select(Country, input$singleColumn)
   )
 
-    
-    
     # group the data for chart later 
     data_chart_input <- reactive(
        # data_selected() %>%
@@ -166,12 +169,8 @@ server <- function(input, output) {
             gather(key = "question", value = "answer", one_of(input$columns))
     )
     
-    # Need reactive for graph data input HERE
-    
     chart_input <- reactive(
-        # use different color and theme 
 
-      
       if(length(input$country) == 0)
       {
         data_chart_input() %>%
@@ -199,19 +198,17 @@ server <- function(input, output) {
                         scales="free",  
                        strip.position = "top",
                         labeller = lot_labeller) +
-            #facet_grid( question ~ Country,  scales="free",   space="free") +
-            
-            theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+
+            theme(
                   panel.spacing.x=unit(3.0, "lines"),
-                  panel.spacing.y=unit(1.0, "lines"),
-                  text = element_text(size=14) , 
+                  panel.spacing.y=unit(2.0, "lines"),
+                  text = element_text(size=12) , 
                   axis.title.x=element_blank(),
                   axis.title.y = element_blank(),
                   strip.background = element_blank(),
                   
                   ) 
         }
-        
                                 
     )
     
@@ -229,7 +226,7 @@ server <- function(input, output) {
     # Datatable
     
     output$table <- renderDataTable(
-      data_selected()
+      plotlydata_selected()
       #data_chart_input()
     )
     
@@ -237,8 +234,10 @@ server <- function(input, output) {
     output$plot <- renderPlotly({
      
       if(length(input$columns) !=  0)
-        chart_input()
+       ggplotly(chart_input()) 
     })
+    
+    
     
     # Map
     output$map <- renderLeaflet({
@@ -250,8 +249,6 @@ server <- function(input, output) {
                      addProviderTiles("OpenStreetMap.Mapnik"))
         
         values <- unique(data[, input$singleColumn])
-        
-        
         
         spread_data <-data %>%
           group_by(Country, value = data[1:nrow(data), input$singleColumn]) %>%
@@ -298,17 +295,16 @@ server <- function(input, output) {
           ) %>%
           #addCircleMarkers(label=~Country, opacity = 0.0, radius= 10.0001)%>%
           setView(-71.0382679, 42.3489054, zoom = 3)
-
         
     })
-    
+
     observe({
       print(input$tabs)
     })
     
     # only show column question with multiple select if we are NOT on the map tab
     output$columns <- renderUI(
-      if(input$tabs != "Country Map" )
+      if(input$tabs != "Country Map"  | input$tabs != "Second Map")
       {
         selectizeInput("columns", "Survey Questions",
                        choices= mylist,
@@ -323,18 +319,17 @@ server <- function(input, output) {
     # only show single column if on country map
     output$singleColumn <- renderUI(
       
-      if(input$tabs == "Country Map")
+      if(input$tabs == "Country Map" | input$tabs == "Second Map" )
       {
         selectizeInput("singleColumn", "Survey Question",
                        choices= mylist,
-                       multiple = FALSE, # was True 
-                       
+                       multiple = FALSE, 
         )
       }
     )
     
     output$country <- renderUI(
-      if(input$tabs == "Country Map")
+      if(input$tabs == "Country Map" || input$tabs == "Second Map")
       {
         return()
       }
