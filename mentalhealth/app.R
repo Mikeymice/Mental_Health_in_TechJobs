@@ -124,7 +124,7 @@ ui <- dashboardPage(skin = "green",
                          leafletOutput("map", height= "800px"), 
                          hr()),
 
-                tabPanel("Compare Countries", tags$p("Select Survey Questions and Counties for comparison"), hr(),
+                tabPanel("Compare Countries", tags$p("Select Survey Questions and Countries for comparison"), hr(),
                          plotlyOutput("plot", 
                                     height= "790px", inline=FALSE )),
                 tabPanel("Compare US States", tags$p("Select Survey Questions and US states for comparison"), hr(),
@@ -237,7 +237,8 @@ server <- function(input, output) {
     # State compare plot 
     output$state_plot <- renderPlotly({
       
-      if(length(input$columns) !=  0)
+      if( length(input$columns) !=  0 )
+      {
         ggplotly(
           
           if(length(input$state) == 0)
@@ -267,8 +268,10 @@ server <- function(input, output) {
                 
               ) 
           }
-      
+          
         ) 
+      }
+        
     
     })
     
