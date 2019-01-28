@@ -30,8 +30,8 @@ geo_location <- read.csv("data/countries.csv")
 
 mylist <- c(
   "Have sought treamtent for mental condition?" = "treatment",
-  "Do your employer provide mental health benefits?" = "benefits",
-  "Possible consequence if discuss a mental health issue with employer?" = "mental_health_consequence",
+  "Does your employer provide mental health benefits?" = "benefits",
+  "Possible consequence if you discuss a mental health issue with employer?" = "mental_health_consequence",
   "Would you bring up a physical health issue with a potential employer in an interview?" = "phys_health_interview",
   "Do you feel that your employer takes mental health as seriously as physical health?" = "mental_vs_physical",
   "Have you heard of or observed negative consequence for coworkers with metnal health condition at workplace?" = "obs_consequence"
@@ -40,10 +40,10 @@ mylist <- c(
 status <- list(
  "treatment" = "Have sought treamtent for mental condition?" ,
  "benefits" ="Do employers provide mental health benefits?",
- "mental_health_consequence" ="Possible consequence from disucssing with employers?" ,
- "phys_health_interview" = "Bring up a physical health issue in an interview?" ,
- "mental_vs_physical" ="Do Employer takes mental health as seriously as physical health?" ,
- "obs_consequence" = "Any negative consequence with metnal health condition at workplace?"
+ "mental_health_consequence" ="Possible consequence from disucssing mental health with employers?" ,
+ "phys_health_interview" = "Would you bring up a physical health issue in an interview?" ,
+ "mental_vs_physical" ="Does employer takes mental health as seriously as physical health?" ,
+ "obs_consequence" = "Any negative consequence with mental health condition at workplace?"
 )
 lot_labeller <- function(variable,value){
   if (variable=='question') {
@@ -102,6 +102,7 @@ ui <- dashboardPage(skin = "green",
 
                 uiOutput("state"),
 
+
                 # age selector
                 sliderInput("ages",
                             "Age Range:",
@@ -134,6 +135,7 @@ ui <- dashboardPage(skin = "green",
                          tags$p("Select Survey Questions and Country for data exploring"),
                          br(),
                          dataTableOutput("table"))
+               
                 )
   )
 )
@@ -189,7 +191,7 @@ server <- function(input, output) {
                 text = element_text(size=14) , 
                 axis.title.x=element_blank(),
                 axis.title.y = element_blank(),
-                strip.background = element_blank(),
+                strip.background = element_blank()
                 
           ) 
       }
@@ -221,7 +223,7 @@ server <- function(input, output) {
     # Datatable
     
     output$table <- renderDataTable(
-      plotlydata_selected()
+      data_selected()
       #data_chart_input()
     )
     
@@ -335,7 +337,7 @@ server <- function(input, output) {
     
     # only show column question with multiple select if we are NOT on the map tab
     output$columns <- renderUI(
-      if(input$tabs != "Country Map"  | input$tabs != "Second Map")
+      if(input$tabs != "Country Map")
       {
         selectizeInput("columns", "Survey Questions",
                        choices= mylist,
@@ -344,6 +346,8 @@ server <- function(input, output) {
                        options = list(maxItems = 3)
         )
       }
+      else
+        return()
 
     )
     
@@ -357,6 +361,8 @@ server <- function(input, output) {
                        multiple = FALSE, 
         )
       }
+      else
+        return()
     )
     
     output$country <- renderUI(
