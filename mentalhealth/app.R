@@ -83,6 +83,11 @@ names(stateList) <- state_choices$var
 ui <- dashboardPage(skin = "green",
   #dashboardHeader(title="Mental Health Perception", titleWidth= 300 ),
   dashboardHeader(title = "Mental Health Perception", titleWidth = 300,
+                  #dropdownMenu(icon=icon("info-circle")),
+                  tags$li(a(href = 'https://github.com/UBC-MDS/Mental_Health_in_TechJobs/blob/master/Proposal.md', 
+                            icon("info-circle"),"About",
+                            title = "About"),
+                          class = "dropdown"),
                   tags$li(a(href = 'https://github.com/UBC-MDS/Mental_Health_in_TechJobs', 
                             icon("github"),"GitHub",
                             title = "GitHub"),
@@ -95,7 +100,7 @@ ui <- dashboardPage(skin = "green",
                 # Location selector
                 uiOutput("country"),
 
-               # uiOutput("state"),
+                uiOutput("state"),
 
                 # age selector
                 sliderInput("ages",
@@ -117,12 +122,14 @@ ui <- dashboardPage(skin = "green",
                 tabPanel("Country Map", 
                          leafletOutput("map", height= "800px"), 
                          hr()),
-                # tabPanel("Country Map2", 
-                #     plotlyOutput("map2", height= "700px"), 
-                #     hr()),
-                tabPanel("Compare Countries", tags$p("Select Survey Questions and Country for comparison"),
+
+                tabPanel("Compare Countries", tags$p("Select Survey Questions and Counties for comparison"), hr(),
                          plotlyOutput("plot", 
-                                    height= "800px", inline=FALSE )),
+                                    height= "790px", inline=FALSE )),
+                tabPanel("Compare US States", tags$p("Select Survey Questions and US states for comparison"), hr(),
+                    plotlyOutput("state_plot", 
+                                 height= "790px", inline=FALSE )),
+           
                 tabPanel("Data Explorer", 
                          tags$p("Select Survey Questions and Country for data exploring"),
                          br(),
@@ -210,18 +217,7 @@ server <- function(input, output) {
         }
                                 
     )
-    
-  
-    # state output Only show the state option when USA is selected
-    output$state <- renderUI(
-        if ("United States" %in% input$country)
-        {
-            selectInput("state", "State (US only)", 
-                        choices = stateList, multiple = TRUE
-            )
-        }
-    )
-    
+ 
     # Datatable
     
     output$table <- renderDataTable(
@@ -231,12 +227,48 @@ server <- function(input, output) {
     
     # Barchart
     output$plot <- renderPlotly({
-     
+    # print(head(data_chart_input()))
       if(length(input$columns) !=  0)
        ggplotly(chart_input()) 
     })
     
+    # State compare plot 
+    output$state_plot <- renderPlotly({
+      
+      if(length(input$columns) !=  0)
+        ggplotly(
+          
+          if(length(input$state) == 0)
+          {
+            return()
+          }
+          else
+          {
+            data_chart_input() %>%
+              filter(state %in% input$state) %>%
+              ggplot(aes(x = answer, fill = state)) +
+              geom_bar() +
+              coord_cartesian(clip = "off")+
+              facet_wrap( question ~ state,
+                          ncol = length(input$state),  
+                          scales="free",  
+                          strip.position = "top",
+                          labeller = lot_labeller) +
+              
+              theme(
+                panel.spacing.x=unit(3.0, "lines"),
+                panel.spacing.y=unit(2.0, "lines"),
+                text = element_text(size=12) , 
+                axis.title.x=element_blank(),
+                axis.title.y = element_blank(),
+                strip.background = element_blank(),
+                
+              ) 
+          }
+      
+        ) 
     
+    })
     
     # Map
     output$map <- renderLeaflet({
@@ -328,16 +360,27 @@ server <- function(input, output) {
     )
     
     output$country <- renderUI(
-      if(input$tabs == "Country Map" || input$tabs == "Second Map")
+      if(input$tabs == "Compare Countries" | input$tabs == "Data Explorer")
       {
-        return()
+        
+        selectizeInput("country", "Country",
+                       choices = countryList, multiple = TRUE,
+                       options = list(maxItems = 2))
       }
       else
       {
-        selectizeInput("country", "Country",
-                    choices = countryList, multiple = TRUE,
-                    options = list(maxItems = 2)
-        )
+       
+        return()
+      }
+    )
+    
+    output$state <- renderUI(
+      
+      if(input$tabs == "Compare US States")
+      {
+        selectizeInput("state", "States",
+                       choices = stateList, multiple = TRUE,
+                       options = list(maxItems = 2))
       }
     )
     
