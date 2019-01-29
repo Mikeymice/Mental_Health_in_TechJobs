@@ -19,8 +19,9 @@ We decided on limiting changes to these 3 points because we felt they would enha
 If we were making this app again from scratch, we would:  
   
    1.	Spend more time to explore different or more map implementations and functionalities to overcome shortcomings such as:  
-        a.	Pie chart labels for each country were difficult to implement. The ‘pop up’ map feature was manipulated to provide this       functionality as a temporary fix.          
-        b.	A fix for preventing a pie/bar chart’s ‘spacing’ potentially overlapping another pie/bar chart based on the size of the data being visualized.         
+         a.	Pie chart labels for each country were difficult to implement. The ‘pop up’ map feature was manipulated to provide this       functionality as a temporary fix.          
+         b.	A fix for preventing a pie/bar chart’s ‘spacing’ potentially overlapping another pie/bar chart based on the size of the data being visualized.  
+         
    2.	Spend more time on data wrangling and exploratory data analysis (EDS) to better explore and clean data to the find the ‘optimal’ features for the project.  
    
 ## Exercise 2: Implementation
