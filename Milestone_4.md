@@ -27,5 +27,5 @@ If we were making this app again from scratch, we would:
 ## Exercise 2: Implementation
   
 [Shiny App Deployment](https://mikeymice.shinyapps.io/mentalhealth/)  
-[Shiny app Repository](https://github.com/UBC-MDS/Mental_Health_in_TechJobs/tree/master/mentalhealth)  
+[Shiny app Repository](https://github.com/UBC-MDS/Mental_Health_in_TechJobs/tree/V4.0/mentalhealth)  
 
